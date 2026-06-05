@@ -1,0 +1,32 @@
+class Plant:
+    def __init__(self, name, height, age, growth):
+        self._name = name
+        self._height = height
+        self._age = age
+        self._growth = growth
+
+    def grow(self):
+        self._height = round(self._height + self._growth, 1)
+
+    def age(self):
+        self._age = round(self._age + 1, 0)
+
+    def show(self):
+        print(f"{self._name}: {self._height}cm, {self._age} days old")
+
+
+def ft_plant_growth():
+    flower = Plant("Rose", 25.0, 30, 0.8)
+    print("=== Garden Plant Growth ===")
+    flower.show()
+    week = range(1, 8, 1)
+    for day in week:
+        print(f"=== Day {day} ===")
+        flower.grow()
+        flower.age()
+        flower.show()
+    print(f"Growth this week: {round(flower._growth * day, 1)}cm")
+
+
+if __name__ == "__main__":
+    ft_plant_growth()
