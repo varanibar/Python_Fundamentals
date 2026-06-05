@@ -1,9 +1,12 @@
 class Plant:
-    def __init__(self, name, height, age, growth):
+    def __init__(self, name, height, age, growth = 0):
         self._name = name.capitalize()
         self._height = height
         self._age = age
-        self._growth = growth
+        if growth == 0:
+            self._growth = round(height / age, 1)
+        else:
+            self._growth = growth
 
     def grow(self):
         self._height = round(self._height + self._growth, 1)
@@ -16,7 +19,7 @@ class Plant:
 
 
 def ft_plant_growth():
-    flower = Plant("rose", 25.0, 30, 0.8)
+    flower = Plant("rose", 25.0, 30)
     print("=== Garden Plant Growth ===")
     flower.show()
     week = range(1, 8, 1)
