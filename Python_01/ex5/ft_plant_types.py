@@ -94,7 +94,8 @@ class Tree(Plant):
 
     def produce_shade(self) -> None:
         print(f"[asking the {(self._name).lower()} to produce shade]")
-        print(f"Tree {self._name} now produces a shade of {self._height}cm long and {self._trunk_diameter}cm wide")
+        print(f"Tree {self._name} now produces a shade of ", end="")
+        print(f"{self._height}cm long and {self._trunk_diameter}cm wide")
 
 
 class Vegetable(Plant):
@@ -115,8 +116,8 @@ class Vegetable(Plant):
         print(f" Harvest season: {self._harvest_season}")
         print(f" Nutritional value: {self._nutritional_value}")
 
-    def age_and_grow(self, days) -> None:
-        print(f"[make tomato grow and age for {days} days]")
+    def age_and_grow(self, days: int) -> None:
+        print(f"[make {(self._name).lower()} grow and age for {days} days]")
         super().age(days)
         super().grow(days)
         self._nutritional_value = days
