@@ -1,9 +1,15 @@
 class Plant:
-    def __init__(self, name: str, height: float, age: int , growth: float=0) -> None:
+    def __init__(
+                self,
+                name: str,
+                height: float,
+                age: int,
+                growth: float = 0.0
+                ) -> None:
         self._name = name.capitalize()
         self._height = round(height, 1)
         self._age = age
-        if growth == 0:
+        if growth == 0.0:
             self._growth = round(height / age, 1)
         else:
             self._growth = growth
@@ -15,7 +21,7 @@ class Plant:
         self._age = self._age + 1
 
     def show(self) -> None:
-        print(f"Created: {self._name}: {self._height}cm, {self._age} days old")
+        print(f"{self._name}: {self._height}cm, {self._age} days old")
 
 
 def ft_plant_factory() -> None:
@@ -27,6 +33,7 @@ def ft_plant_factory() -> None:
     print("=== Plant Factory Output ===")
     factory = [rose, oak, cactus, sunflower, fern]
     for plant in factory:
+        print("Created: ", end="")
         plant.show()
 
 
