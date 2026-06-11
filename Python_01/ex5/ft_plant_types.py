@@ -7,16 +7,24 @@ class Plant:
                 growth: float = 0
                 ) -> None:
         self._name = name.capitalize()
-        self._height = 0.0
-        self.set_height(height)
-        self._age = 0
-        self.set_age(age)
+        if height < 0.0:
+            self._height = 0.0
+            print(f"{self._name}: Error, height can't be negative")
+            print("Setting height to 0.0cm")
+        else:
+            self._height = round(height, 1)
+        if age < 0:
+            self._age = 0
+            print(f"{self._name}: Error, age can't be negative")
+            print("Setting age to 0 days")
+        else:
+            self._age = age
         self._growth = growth
 
-    def grow(self, days) -> None:
+    def grow(self, days: int) -> None:
         self._height = round(self._height + (self._growth * days), 1)
 
-    def age(self, days) -> None:
+    def age(self, days: int) -> None:
         self._age += days
 
     def get_height(self) -> float:
@@ -26,26 +34,20 @@ class Plant:
         return self._age
 
     def set_height(self, new_height: float) -> None:
-        if new_height > 0.0 and self._height == 0.0:
-            self._height = round(new_height, 1)
-        elif new_height > 0.0:
+        if new_height > 0.0:
             self._height = round(new_height, 1)
             print(f"Height updated: {self._height}cm")
         else:
             print(f"{self._name}: Error, height can't be negative")
-            if self._height != 0:
-                print("Height update rejected")
+            print("Height update rejected")
 
     def set_age(self, new_age: int) -> None:
-        if new_age > 0 and self._age == 0:
-            self._age = new_age
-        elif new_age > 0:
+        if new_age > 0:
             self._age = new_age
             print(f"Age updated: {self._age} days")
         else:
             print(f"{self._name}: Error, age can't be negative")
-            if self._age != 0:
-                print("Age update rejected")
+            print("Age update rejected")
 
     def show(self) -> None:
         print(f"{self._name}: {self._height}cm, {self._age} days old")
