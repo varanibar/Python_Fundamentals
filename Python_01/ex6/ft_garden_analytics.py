@@ -33,10 +33,10 @@ class Plant:
         print("Stats: ", end="")
         print(f"{self._stats._number_grow} grow, ", end="")
         print(f"{self._stats._number_age} age, ", end="")
-        print(f"{self._stats._number_show} show" )
-            
+        print(f"{self._stats._number_show} show")
+
     @staticmethod
-    def is_year_old(age) -> None:
+    def is_year_old(age: int) -> None:
         print(f"Is {age} days more than a year? -> ", end="")
         if age > 365:
             print("True")
@@ -44,7 +44,7 @@ class Plant:
             print("False")
 
     @classmethod
-    def anonymous(cls):
+    def anonymous(cls) -> "Plant":
         return cls("Unknown plant", 0.0, 0, 0.0)
 
     def grow(self, days: int) -> None:
@@ -82,7 +82,6 @@ class Plant:
         print(f"{self._name}: {self._height}cm, {self._age} days old")
 
 
-
 class Flower(Plant):
     def __init__(
                 self,
@@ -107,6 +106,7 @@ class Flower(Plant):
     def bloom(self) -> None:
         self._bloom = 1
 
+
 class Seed(Flower):
     def __init__(
                 self,
@@ -128,6 +128,7 @@ class Seed(Flower):
     def bloom(self) -> None:
         super().bloom()
         self._number_seeds += self._seeding
+
 
 class Tree(Plant):
     def __init__(
@@ -157,32 +158,6 @@ class Tree(Plant):
         print(f"{self._height}cm long and {self._trunk_diameter}cm wide")
 
 
-class Vegetable(Plant):
-    def __init__(
-                self,
-                name: str,
-                height: float,
-                age: int,
-                growth: float,
-                harvest_season: str
-                ) -> None:
-        super().__init__(name, height, age, growth)
-        self._harvest_season = harvest_season.capitalize()
-        self._nutritional_value = 0
-
-    def show(self) -> None:
-        super().show()
-        print(f" Harvest season: {self._harvest_season}")
-        print(f" Nutritional value: {self._nutritional_value}")
-
-    def age_and_grow(self, days: int) -> None:
-        print(f"[make {(self._name).lower()} grow and age for {days} days]")
-        super().age(days)
-        super().grow(days)
-        self._nutritional_value = days
-        self.show()
-
-
 def ft_garden_analytics() -> None:
     print("=== Garden statistics ===")
 
@@ -206,12 +181,6 @@ def ft_garden_analytics() -> None:
     oak.produce_shade()
     oak.show_stats()
 
-    # print("\n=== Vegetable")
-    # tomato = Vegetable("tomato", 5.0, 10, 2.1, "april")
-    # tomato.show()
-    # tomato.show_stats()
-    # tomato.age_and_grow(20)
-
     print("\n=== Seed")
     sunflower = Seed("sunflower", 80.0, 45, 1.5, "yellow")
     sunflower.show()
@@ -226,6 +195,7 @@ def ft_garden_analytics() -> None:
     unknown_plant = Plant.anonymous()
     unknown_plant.show()
     unknown_plant.show_stats()
+
 
 if __name__ == "__main__":
     ft_garden_analytics()
