@@ -12,7 +12,7 @@ def test_temperature(temp_str: str) -> None:
         print(f"{err}")
 
 
-def ft_first_exception() -> None:
+def main() -> None:
     print("=== Garden Temperature ===")
     test_temperature("25")
     test_temperature("abc")
@@ -20,4 +20,4 @@ def ft_first_exception() -> None:
 
 
 if __name__ == "__main__":
-    ft_first_exception()
+    main()
