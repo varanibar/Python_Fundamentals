@@ -12,6 +12,7 @@ class WaterError(GardenError):
     def __init__(self, message: str = "Unknown water error"):
         super().__init__(message)
 
+
 def water_plant(plant_name: str) -> None:
     name_caps = plant_name.capitalize()
     if plant_name == name_caps:
