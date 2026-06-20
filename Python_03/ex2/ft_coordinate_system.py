@@ -1,43 +1,45 @@
 import math
 
 
-def convert_float(f: float) -> None:
-    try:
-        float(f)
-    except Exception as err:
-        print(f"Error on parameter '{f}': {err}")
-
-
-def get_player_pos(coordinates: str) -> tuple:
-    print("Enter new coordinates as floats in format 'x,y,z': ", end="")
-    print(f"{coordinates}")
+def get_player_pos() -> tuple[float, ...]:
+    coordinates = input("Enter new coordinates as floats in format 'x,y,z': ")
     lst_coordinates = coordinates.split(",")
-    # print(lst_coordinates)
-    # print(len(lst_coordinates))
     if len(lst_coordinates) != 3:
         print("Invalid syntax")
+        return get_player_pos()
     else:
-            try:
-                for coordinate in lst_coordinates:
-                    float(coordinate)
-                tup = tuple(lst_coordinates)
-                print(f"Got a first tuple: {tup}")
-            except Exception as err:
-                print(f"Error on parameter '{coordinate}': {err}")
-
-
-
+        try:
+            i = 0
+            lst_xyz: list[float] = []
+            while i < 3:
+                nbr = float(lst_coordinates[i])
+                lst_xyz.append(nbr)
+                i += 1
+        except Exception as err:
+            print(f"Error on parameter '{lst_coordinates[i]}': {err}")
+            return get_player_pos()
+        else:
+            return tuple(lst_xyz)
 
 
 def main() -> None:
     print("=== Game Coordinate System ===\n")
-    get_player_pos("hello world")
-    print("")
-    get_player_pos("1.0 ,2.5 , 3.0")
-    print("")
-    get_player_pos("4,abc, b")
-    print("")
-    get_player_pos("4,5,6")
-    print("")
+    print("Get a first set of coordinates")
+    tup_1 = get_player_pos()
+    print(f"Got a first tuple: {tup_1}")
+    print(f"It includes: X={tup_1[0]}, Y={tup_1[1]}, Z={tup_1[2]}")
+    dist = math.sqrt((tup_1[0]**2 + tup_1[1]**2 + tup_1[2]**2))
+    print(f"Distance to center: {round(dist, 4)}\n")
+    print("Get a second set of coordinates")
+    tup_2 = get_player_pos()
+    total = 0.0
+    i = 0
+    while i < 3:
+        total += (tup_2[i] - tup_1[i])**2
+        i += 1
+    dist = math.sqrt((total))
+    print(f"Distance between the 2 sets of coordinates: {round(dist, 4)}\n")
+
+
 if __name__ == "__main__":
     main()
