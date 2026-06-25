@@ -37,6 +37,7 @@ class Inventory:
         total_items_qty = sum(self.dict_items.values())
         print(f"Item list: {lst_items}")
         print(f"Total quantity of the {total_items} items: {total_items_qty}")
+
         most_qty = 0
         least_item = lst_items[0]
         least_qty = self.dict_items[least_item]
