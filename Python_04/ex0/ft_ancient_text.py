@@ -10,15 +10,14 @@ def main() -> None:
         file_name = sys.argv[1]
         print(f"Accessing file '{file_name}'")
         try:
-            file: typing.IO[str] = open(file_name)
-        except Exception as err:
-            print(f"Error opening file '{file_name}': {err}\n")
-        else:
+            file: typing.IO[str] = open(file_name, "r")
             print("---\n")
             print(file.read(), end="")
             print("---")
             file.close()
             print(f"File '{file_name}' closed.")
+        except Exception as err:
+            print(f"Error opening file '{file_name}': {err}\n")
 
 
 if __name__ == "__main__":
