@@ -3,16 +3,18 @@ import sys
 
 def ft_ancient_text() -> None:
     if len(sys.argv) == 1:
-        print("Usage: ft_ancient_text.py <file>\n")
+        print("Usage: ft_archive_creation.py <file>\n")
     else:
         print("=== Cyber Archives Recovery & Preservation ===")
         file_name = sys.argv[1]
-        print(f"Accessing file '{file_name}'\n---\n")
+        print(f"Accessing file '{file_name}'")
         try:
             file = open(file_name, "r")
+            print("---\n")
             print(file.read(), end="")
             file.close()
             print(f"\n---\nFile '{file_name}' closed.\n")
+            ft_archive_creation()
         except Exception as err:
             print(f"Error opening file '{file_name}': {err}\n")
 
@@ -43,7 +45,6 @@ def ft_archive_creation() -> None:
 
 def main() -> None:
     ft_ancient_text()
-    ft_archive_creation()
 
 
 if __name__ == "__main__":
