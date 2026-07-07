@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 import typing
 
@@ -10,12 +11,12 @@ def main() -> None:
         file_name = sys.argv[1]
         print(f"Accessing file '{file_name}'")
         try:
-            file: typing.IO[str] = open(file_name, "r")
+            f: typing.IO[str] = open(file_name, "r")
             print("---\n")
-            print(file.read(), end="")
-            print("---")
-            file.close()
-            print(f"File '{file_name}' closed.")
+            content = f.read()
+            f.close()
+            print(content)
+            print(f"---\nFile '{file_name}' closed.\n")
         except Exception as err:
             print(f"Error opening file '{file_name}': {err}\n")
 

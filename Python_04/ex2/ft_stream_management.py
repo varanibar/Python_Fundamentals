@@ -1,4 +1,6 @@
+#!/usr/bin/env python3
 import sys
+import typing
 
 
 def ft_ancient_text() -> None:
@@ -9,11 +11,12 @@ def ft_ancient_text() -> None:
         file_name = sys.argv[1]
         print(f"Accessing file '{file_name}'")
         try:
-            f = open(file_name, "r")
+            f: typing.IO[str] = open(file_name, "r")
             print("---\n")
-            print(f.read(), end="")
+            content = f.read()
             f.close()
-            print(f"\n---\nFile '{file_name}' closed.\n")
+            print(content)
+            print(f"---\nFile '{file_name}' closed.\n")
             ft_archive_creation()
         except Exception as err:
             print("[STDERR] Error opening file ", file=sys.stderr, end="")
@@ -30,7 +33,8 @@ def ft_archive_creation() -> None:
     lst_lines = [line + "#" for line in lst_lines]
     new_content = "\n".join(lst_lines)
     print(new_content)
-    new_file = input("\n---\nEnter new file name (or empty): ")
+    print("\n---\nEnter new file name (or empty): ", end="")
+    new_file = sys.stdin.readline().rstrip("\n")
     if new_file == "":
         print("Not saving data")
     else:
