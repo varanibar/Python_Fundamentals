@@ -21,92 +21,127 @@ class DataProcessor(ABC):
             return extracted_data
         except Exception as err:
             print(f"{err.__class__.__name__}: {err}")
-            return (0, "Empty")
+            return (-1, "Empty")
 
 
 class NumericProcessor(DataProcessor):
-    def validate(self, data: Any) -> bool:
+
+    def validate(
+                self,
+                data: Any
+                ) -> bool:
+
         if isinstance(data, list):
             return all(
-                    isinstance(i, (int, float))
-                    and not isinstance(i, bool)
-                    for i in data)
-        else:
-            return (isinstance(data, (int, float))
-                    and not isinstance(data, bool))
+                    isinstance(item, (int, float))
+                    and not isinstance(item, bool)
+                    for item in data
+                    )
 
-    def ingest(self, data:
-               int | float | list[int] | list[float] | list[int | float]
-               ) -> None:
+        else:
+            return (
+                    isinstance(data, (int, float))
+                    and not isinstance(data, bool)
+                    )
+
+    def ingest(
+            self,
+            data: int | float | list[int] | list[float] | list[int | float]
+            ) -> None:
+
         if self.validate(data):
-            if isinstance(data, (int, float)):
+            if isinstance(data, list):
+                for item in data:
+                    tup = (self._counter, str(item))
+                    self._data.append(tup)
+                    self._counter += 1
+            else:
                 tup = (self._counter, str(data))
                 self._data.append(tup)
                 self._counter += 1
-            else:
-                for i in data:
-                    tup = (self._counter, str(i))
-                    self._data.append(tup)
-                    self._counter += 1
+
         else:
             raise TypeError("Improper numeric data")
 
 
 class TextProcessor(DataProcessor):
-    def validate(self, data: Any) -> bool:
+
+    def validate(
+                self,
+                data: Any
+                ) -> bool:
+
         if isinstance(data, list):
             return all(
-                    isinstance(i, str)
-                    and not isinstance(i, bool)
-                    for i in data)
+                    isinstance(item, str)
+                    and not isinstance(item, bool)
+                    for item in data)
+
         else:
             return (isinstance(data, str)
                     and not isinstance(data, bool))
 
-    def ingest(self, data:
-               str | list[str]
-               ) -> None:
+    def ingest(
+            self,
+            data: str | list[str]
+            ) -> None:
+
         if self.validate(data):
-            if isinstance(data, str):
-                tup = (self._counter, str(data))
-                self._data.append(tup)
-                self._counter += 1
-            else:
-                for i in data:
-                    tup = (self._counter, str(i))
+            if isinstance(data, list):
+                for item in data:
+                    tup = (self._counter, item)
                     self._data.append(tup)
                     self._counter += 1
+            else:
+                tup = (self._counter, data)
+                self._data.append(tup)
+                self._counter += 1
+
         else:
             raise TypeError("Improper text data")
 
 
 class LogProcessor(DataProcessor):
-    def validate(self, data: Any) -> bool:
-        def is_valid_dict(item: Any) -> bool:
-            return (
-                set(item.keys()) == {"log_level", "log_message"}
-                and
-                all(isinstance(key, str) for key in item.keys())
-                and
-                all(isinstance(val, str) for val in item.values())
-                )
+
+    def validate(
+                self,
+                data: Any
+                ) -> bool:
 
         if isinstance(data, dict):
-            return (is_valid_dict(data))
+            return (self.validate_dict(data))
 
-        if isinstance(data, list) and all(isinstance(item, dict) for item in data):
-            return (all(is_valid_dict(item) for item in data))
+        if isinstance(data, list):
+            if all(isinstance(item, dict) for item in data):
+                return (all(self.validate_dict(item) for item in data))
 
         return False
 
-    def ingest(self, data: dict[str, str] | list[dict[str, str]]) -> None:
+    @staticmethod
+    def validate_dict(
+                    data: dict[str, str]
+                    ) -> bool:
+        return (
+            len(data) == 2
+            and
+            all(isinstance(key, str) for key in data.keys())
+            and
+            all(isinstance(val, str) for val in data.values())
+            )
+
+    def ingest(
+            self,
+            data: dict[str, str] | list[dict[str, str]]
+            ) -> None:
+
         if not self.validate(data):
             raise TypeError("Improper log data")
 
-        def store_log(log_entry: dict[str, str]):
-            level = log_entry["log_level"]
-            message = log_entry["log_message"]
-            tup = (self._counter, level + ": " + message)
+        def store_log(log_entry: dict[str, str]) -> None:
+            keys = list(log_entry.keys())
+            level = keys[0]
+            message = keys[1]
+            tup = (self._counter, log_entry[level] + ": " + log_entry[message])
             self._data.append(tup)
             self._counter += 1
 
@@ -185,6 +220,10 @@ def log_processor_test() -> None:
             [{"k": "v", "a": "b"}, {"h": "w", "d": "l"}, "hi"],
             {"k": "v", "a": "b", "h": "w"},
             [{"k": "v", "a": "b", "h": "w"}, {"h": "w", "d": "l"}],
+            {
+                "log_level": "NOTICE",
+                "log_message": "Connection to server"
+            }
             ]
     for test in tests:
         print(f"Trying to validate input '{test}': ", end="")
@@ -196,8 +235,8 @@ def log_processor_test() -> None:
                 },
                 {
                 "log_level": "ERROR",
-                "log_message": "Unauthorized access!!"
-                }]
+                "log_message": "Unauthorized access!!"}
+                ]
     print(f"\nProcessing data: {log_data}")
     log_processor.ingest(log_data)
     n = 2
