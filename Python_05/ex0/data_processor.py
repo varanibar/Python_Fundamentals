@@ -5,7 +5,7 @@ from typing import Any
 class DataProcessor(ABC):
     def __init__(self) -> None:
         self._data: list[tuple[int, str]] = []
-        self._counter: int = 0
+        self._index: int = 0
 
     @abstractmethod
     def validate(self, data: Any) -> bool:
@@ -52,13 +52,13 @@ class NumericProcessor(DataProcessor):
         if self.validate(data):
             if isinstance(data, list):
                 for item in data:
-                    tup = (self._counter, str(item))
+                    tup = (self._index, str(item))
                     self._data.append(tup)
-                    self._counter += 1
+                    self._index += 1
             else:
-                tup = (self._counter, str(data))
+                tup = (self._index, str(data))
                 self._data.append(tup)
-                self._counter += 1
+                self._index += 1
 
         else:
             raise TypeError("Improper numeric data")
@@ -89,13 +89,13 @@ class TextProcessor(DataProcessor):
         if self.validate(data):
             if isinstance(data, list):
                 for item in data:
-                    tup = (self._counter, item)
+                    tup = (self._index, item)
                     self._data.append(tup)
-                    self._counter += 1
+                    self._index += 1
             else:
-                tup = (self._counter, data)
+                tup = (self._index, data)
                 self._data.append(tup)
-                self._counter += 1
+                self._index += 1
 
         else:
             raise TypeError("Improper text data")
@@ -108,26 +108,23 @@ class LogProcessor(DataProcessor):
                 data: Any
                 ) -> bool:
 
+        def _validate_dict(
+                        data: dict[str, str]
+                        ) -> bool:
+            return (
+                all(isinstance(key, str) for key in data.keys())
+                and
+                all(isinstance(val, str) for val in data.values())
+                )
+
         if isinstance(data, dict):
-            return (self.validate_dict(data))
+            return (_validate_dict(data))
 
         if isinstance(data, list):
             if all(isinstance(item, dict) for item in data):
-                return (all(self.validate_dict(item) for item in data))
+                return (all(_validate_dict(item) for item in data))
 
         return False
-
-    @staticmethod
-    def validate_dict(
-                    data: dict[str, str]
-                    ) -> bool:
-        return (
-            len(data) == 2
-            and
-            all(isinstance(key, str) for key in data.keys())
-            and
-            all(isinstance(val, str) for val in data.values())
-            )
 
     def ingest(
             self,
@@ -137,19 +134,17 @@ class LogProcessor(DataProcessor):
         if not self.validate(data):
             raise TypeError("Improper log data")
 
-        def store_log(log_entry: dict[str, str]) -> None:
-            keys = list(log_entry.keys())
-            level = keys[0]
-            message = keys[1]
-            tup = (self._counter, log_entry[level] + ": " + log_entry[message])
+        def _store_log(log_entry: dict[str, str]) -> None:
+            values = ": ".join(log_entry.values())
+            tup = (self._index, values)
             self._data.append(tup)
-            self._counter += 1
+            self._index += 1
 
         if isinstance(data, list):
             for log_entry in data:
-                store_log(log_entry)
+                _store_log(log_entry)
         elif isinstance(data, dict):
-            store_log(data)
+            _store_log(data)
 
 
 def numeric_processor_test() -> None:
@@ -177,8 +172,8 @@ def numeric_processor_test() -> None:
     num_data = [1, 2, 3, 4, 5]
     print(f"\nProcessing data: {num_data}")
     num_processor.ingest(num_data)
-    n = 3
-    print(f"Extracting {n} values...")
+    n = 2
+    print(f"Extracting {n} value(s)...")
     for _ in range(n):
         output = num_processor.output()
         print(f"Numeric value {output[0]}: {output[1]}")
@@ -201,8 +196,8 @@ def text_processor_test() -> None:
     text_data = ["Hello", "Nexus", "World"]
     print(f"\nProcessing data: {text_data}")
     text_processor.ingest(text_data)
-    n = 1
-    print(f"Extracting {n} value...")
+    n = 2
+    print(f"Extracting {n} value(s)...")
     for _ in range(n):
         output = text_processor.output()
         print(f"Text value {output[0]}: {output[1]}")
@@ -216,14 +211,7 @@ def log_processor_test() -> None:
             "Hello",
             [1, 2, 3, 4, "a"],
             {"c": "d", "a": "b", 1: "2"},
-            [{"k": "v", "a": "b"}, {"h": "w", "dict": 1}],
-            [{"k": "v", "a": "b"}, {"h": "w", "d": "l"}, "hi"],
-            {"k": "v", "a": "b", "h": "w"},
-            [{"k": "v", "a": "b", "h": "w"}, {"h": "w", "d": "l"}],
-            {
-                "log_level": "NOTICE",
-                "log_message": "Connection to server"
-            }
+            {"a": "aa", "b": "bb", "c": "cc"},
             ]
     for test in tests:
         print(f"Trying to validate input '{test}': ", end="")
@@ -235,12 +223,13 @@ def log_processor_test() -> None:
                 },
                 {
                 "log_level": "ERROR",
-                "log_message": "Unauthorized access!!"}
-                ]
+                "log_message": "Unauthorized access!!"
+                }]
+
     print(f"\nProcessing data: {log_data}")
     log_processor.ingest(log_data)
     n = 2
-    print(f"Extracting {n} values...")
+    print(f"Extracting {n} value(s)...")
     for _ in range(n):
         output = log_processor.output()
         print(f"Log entry {output[0]}: {output[1]}")
@@ -249,17 +238,18 @@ def log_processor_test() -> None:
 def main() -> None:
     print("=== Code Nexus - Data Processor ===")
 
-    print("\n\n+++++++++++++++++++++++++")
+    print("\n+++++++++++++++++++++++++")
     print("Testing Numeric Processor...\n")
     numeric_processor_test()
 
-    print("\n\n+++++++++++++++++++++++++\n")
-    print("Testing Text Processor...")
+    print("\n\n+++++++++++++++++++++++++")
+    print("Testing Text Processor...\n")
     text_processor_test()
 
-    print("\n\n+++++++++++++++++++++++++\n")
-    print("Testing Log Processor...")
+    print("\n\n+++++++++++++++++++++++++")
+    print("Testing Log Processor...\n")
     log_processor_test()
+    print("\n\n+++++++++++++++++++++++++")
 
 
 if __name__ == "__main__":
