@@ -28,7 +28,7 @@ class ExportPlugin(Protocol):
         pass
 
 
-class CSVExportPlugin(ExportPlugin):
+class CSVExportPlugin():
     def process_output(self, data: list[tuple[int, str]]) -> None:
         print("CSV Output:")
         output = []
@@ -38,7 +38,7 @@ class CSVExportPlugin(ExportPlugin):
         print(processed_output)
 
 
-class JSONExportPlugin(ExportPlugin):
+class JSONExportPlugin():
     def process_output(self, data: list[tuple[int, str]]) -> None:
         print("JSON Output:")
         processed_output: dict[str, str] = {}
@@ -92,7 +92,14 @@ class DataStream():
                     processed_data.append(tup)
                 except Exception:
                     pass
-            plugin.process_output(processed_data)
+            try:
+                do_plugin(plugin, processed_data)
+            except Exception as err:
+                print(f"Invalid plugin: {err}")
+
+
+def do_plugin(plugin: ExportPlugin, data: list[tuple[int, str]]) -> None:
+    plugin.process_output(data)
 
 
 class NumericProcessor(DataProcessor):
