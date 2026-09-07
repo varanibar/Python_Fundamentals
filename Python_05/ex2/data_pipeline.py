@@ -41,11 +41,11 @@ class CSVExportPlugin():
 class JSONExportPlugin():
     def process_output(self, data: list[tuple[int, str]]) -> None:
         print("JSON Output:")
-        processed_output: dict[str, str] = {}
+        output = []
         for tup in data:
-            key = "item_" + str(tup[0])
-            value = tup[1]
-            processed_output[key] = value
+            string = f'"item_{tup[0]}": "{tup[1]}"'
+            output.append(string)
+        processed_output = f"{{{", ".join(output)}}}"
         print(processed_output)
 
 
