@@ -1,28 +1,48 @@
 from abc import ABC, abstractmethod
 
+
 class Creature(ABC):
     def __init__(self, name: str, type: str) -> None:
         self.name = name
         self.type = type
 
     @abstractmethod
-    def attack(self) -> str:
-        pass
+    def attack(self, attack: str) -> str:
+        return f"{self.name} uses {attack}!"
 
     def describe(self) -> str:
-        message = f"{self.name} is a {self.type} type Creature"
-        return message
+        return f"{self.name} is a {self.type} type Creature"
 
-class Flameling(Creature):
-    def __init__(self, name: str, type: str) -> None:
-        super().__init__(name, type)
+
+class Agumon(Creature):
+    def __init__(self) -> None:
+        super().__init__("Agumon", "Fire")
 
     def attack(self) -> str:
-        message = f"{self.name} uses Ember"
-        return
+        return super().attack("Pepper Breath")
 
-def main():
-    print("Testing factory")
 
-if __name__ == "__main__":
-    main()
+class Greymon(Creature):
+    def __init__(self) -> None:
+        super().__init__("Greymon", "Fire")
+
+    def attack(self) -> str:
+        return super().attack("Mega Flame")
+
+
+class Gomamon(Creature):
+    def __init__(self) -> None:
+        super().__init__("Gomamon", "Water")
+
+    def attack(self) -> str:
+        return super().attack("Marching Fishes")
+
+
+class Ikkakumon(Creature):
+    def __init__(self) -> None:
+        super().__init__("Ikkakumon", "Water/Ice")
+
+    def attack(self) -> str:
+        return super().attack("Harpoon Torpedo")
+
+
