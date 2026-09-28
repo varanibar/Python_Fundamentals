@@ -25,7 +25,7 @@ def test_battle(
     print(creature_two.attack())
 
 
-def main():
+def main() -> None:
     print("Testing fire factory")
     flame_factory = FlameFactory()
     test_factory(flame_factory)

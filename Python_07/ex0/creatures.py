@@ -7,8 +7,8 @@ class Creature(ABC):
         self.type = type
 
     @abstractmethod
-    def attack(self, attack: str) -> str:
-        return f"{self.name} uses {attack}!"
+    def attack(self) -> str:
+        ...
 
     def describe(self) -> str:
         return f"{self.name} is a {self.type} type Creature"
@@ -19,7 +19,7 @@ class Agumon(Creature):
         super().__init__("Agumon", "Fire")
 
     def attack(self) -> str:
-        return super().attack("Pepper Breath")
+        return f"{self.name} uses Pepper Breath!"
 
 
 class Greymon(Creature):
@@ -27,7 +27,7 @@ class Greymon(Creature):
         super().__init__("Greymon", "Fire")
 
     def attack(self) -> str:
-        return super().attack("Mega Flame")
+        return f"{self.name} uses Mega Flame!"
 
 
 class Gomamon(Creature):
@@ -35,7 +35,7 @@ class Gomamon(Creature):
         super().__init__("Gomamon", "Water")
 
     def attack(self) -> str:
-        return super().attack("Marching Fishes")
+        return f"{self.name} uses Marching Fishes!"
 
 
 class Ikkakumon(Creature):
@@ -43,6 +43,4 @@ class Ikkakumon(Creature):
         super().__init__("Ikkakumon", "Water/Ice")
 
     def attack(self) -> str:
-        return super().attack("Harpoon Torpedo")
-
-
+        return f"{self.name} uses Harpoon Torpedo!"
