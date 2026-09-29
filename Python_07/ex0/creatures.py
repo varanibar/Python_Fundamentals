@@ -19,7 +19,7 @@ class Agumon(Creature):
         super().__init__("Agumon", "Fire")
 
     def attack(self) -> str:
-        return f"{self.name} uses Pepper Breath!"
+        return f"Attack! {self.name} uses Pepper Breath!"
 
 
 class Greymon(Creature):
@@ -27,7 +27,7 @@ class Greymon(Creature):
         super().__init__("Greymon", "Fire")
 
     def attack(self) -> str:
-        return f"{self.name} uses Mega Flame!"
+        return f"Attack! {self.name} uses Mega Flame!"
 
 
 class Gomamon(Creature):
@@ -35,7 +35,7 @@ class Gomamon(Creature):
         super().__init__("Gomamon", "Water")
 
     def attack(self) -> str:
-        return f"{self.name} uses Marching Fishes!"
+        return f"Attack! {self.name} uses Marching Fishes!"
 
 
 class Ikkakumon(Creature):
@@ -43,4 +43,4 @@ class Ikkakumon(Creature):
         super().__init__("Ikkakumon", "Water/Ice")
 
     def attack(self) -> str:
-        return f"{self.name} uses Harpoon Torpedo!"
+        return f"Attack! {self.name} uses Harpoon Torpedo!"

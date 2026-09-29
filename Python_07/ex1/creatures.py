@@ -18,10 +18,10 @@ class Patamon(HealingCreature):
         super().__init__("Patamon", "Air")
 
     def attack(self) -> str:
-        return f"{self.name} uses Boom Bubble!"
+        return f"Attack! {self.name} uses Boom Bubble!"
 
     def heal(self, target: str) -> str:
-        return f"{self.name} heals {target} for a small amount!"
+        return f"Heal! {self.name} heals {target} for a small amount!"
 
 
 class Angemon(HealingCreature):
@@ -29,10 +29,10 @@ class Angemon(HealingCreature):
         super().__init__("Angemon", "Angel")
 
     def attack(self) -> str:
-        return f"{self.name} uses Hand of Fate!"
+        return f"Attack! {self.name} uses Hand of Fate!"
 
     def heal(self, target: str) -> str:
-        return f"{self.name} heals {target} for a large amount"
+        return f"Heal! {self.name} heals {target} for a large amount"
 
 
 class Gabumon(TransformCreature):
