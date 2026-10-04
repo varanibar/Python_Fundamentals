@@ -16,19 +16,42 @@ dependencies = {"pandas":"Data manipulation ready",
 #         ]
 
 
-def is_installed(module: str, function: str) -> None:
+def is_installed(module: str) -> None:
     try:
         import_module(module)
-        version = metadata.version(module)
-        print(f"[OK] {module} ({version}) - {function}")
+        return True
     except ImportError:
-        print(f"[KO] {module} is NOT installed")
+        return False
 
 def main() -> None:
-    print("LOADING STATUS: Loading programs...")
-    print("Checking dependencies:")
+    print("\nLOADING STATUS: Loading programs...")
+    print("\nChecking dependencies:")
+    missing_packages = False
     for (module, description) in dependencies.items():
-        is_installed(module, description)
+        if is_installed(module):
+            version = metadata.version(module)
+            print(f"[OK] {module} ({version}) - {description}")
+        else:
+            print(f"[MISSING] {module} is NOT installed")
+            missing_packages = True
+
+    if missing_packages:
+        print(
+            "\n\nMissing dependencies:\n"
+            "Use pip or poetry to install the missing dependencies.\n"
+            "\nUsing pip:\n"
+            " -To install a single package, use:\n"
+            "    python -m pip install <package>\n"
+            " -To install multiple packages with a text file, use:\n"
+            "    python -m pip install -r <requirements file>\n"
+            "\nUsing poetry:\n"
+            " -To install all dependencies defined in pyproject.toml, use:\n"
+            "    poetry install\n"
+            )
+
+    else:
+        print("\n\nAnalyzing Matrix data...")
+
 
 
 if __name__ == "__main__":
