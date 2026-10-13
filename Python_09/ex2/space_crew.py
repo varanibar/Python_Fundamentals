@@ -4,7 +4,8 @@ from enum import Enum
 from typing import Any
 import json
 
-class Rank (Enum):
+
+class Rank (str, Enum):
     CADET = "cadet"
     OFFICER = "officer"
     LIUTENANT = "lieutenant"
@@ -13,6 +14,8 @@ class Rank (Enum):
 
 
 class CrewMember(BaseModel):
+    """Crew member data with validated personal data."""
+
     member_id: str = Field(min_length=3, max_length=10)
     name: str = Field(min_length=2, max_length=50)
     rank: Rank
@@ -23,31 +26,44 @@ class CrewMember(BaseModel):
 
 
 class SpaceMission(BaseModel):
+    """Space mission data with field and business rule validation."""
+
     mission_id: str = Field(min_length=5, max_length=15)
     mission_name: str = Field(min_length=3, max_length=100)
     destination: str = Field(min_length=3, max_length=50)
     launch_date: datetime
     duration_days: int = Field(ge=1, le=3650)
-    crew: list[CrewMember] = Field(min_length=1, max_length=12)
+    crew: list[CrewMember]
     mission_status: str = Field(default="planned")
     budget_millions: float = Field(ge=1.0, le=10000.0)
 
     @model_validator(mode="after")
-    def mission_rules(self) -> "SpaceMission":
+    def validate_mission_rules(self) -> "SpaceMission":
+        """Enforce mission rules after field validation."""
+
         if not self.mission_id.startswith("M"):
             raise ValueError("Mission ID must start with 'M'")
 
+        if not 1 <= len(self.crew) <= 12:
+            raise ValueError("Crews must contain 1-12 members")
+
         ranks: list[str] = [member.rank.value for member in self.crew]
         if "commander" not in ranks and "captain" not in ranks:
-            raise ValueError("Must have at least one Commander or Captain")
+            raise ValueError(
+                "Must have at least one Commander or Captain")
 
         if self.duration_days > 365:
-            crew_experience: list[int] = [member.years_experience for member in self.crew]
-            crew_size: int = len(self.crew)
-            total_exp = sum(crew_experience)
-            media = total_exp // crew_size
-            if media <= 5.0:
-                raise ValueError("Long missions (> 365 days) need 50%% experienced crew (5+ years)")
+            crew_size = len(self.crew)
+            experienced_members = sum(
+                member.years_experience >= 5
+                for member in self.crew
+                )
+
+            if experienced_members * 2 < crew_size:
+                raise ValueError(
+                    "Long missions (> 365 days) need 50% "
+                    "experienced crew (5+ years)"
+                    )
 
         if not all(member.is_active for member in self.crew):
             raise ValueError("All crew members must be active")
@@ -67,7 +83,8 @@ class SpaceMission(BaseModel):
         )
         for member in self.crew:
             print(
-                f"  - {member.name} ({member.rank.value}) - {member.specialization}"
+                f"  - {member.name} ({member.rank.value})"
+                f"  - {member.specialization}"
                 )
 
 
@@ -77,65 +94,49 @@ def unpack(space_missions: list[dict[str, Any]]) -> None:
             mission = SpaceMission(**mission_data)
             mission.show()
 
-        except ValueError as err:
-            print("\nInvalid mission data:\n")
+        except ValidationError as err:
+            print("\nInvalid mission data:")
 
             for error in err.errors():
                 loc = error["loc"]
-                msg = error["msg"].removeprefix("Value error, ")
+                src = ".".join(map(str, error["loc"]))
+                msg = error["msg"]
 
                 if not loc:
-                    source = "SpaceMission rule:"
+                    src = " model_validator rule"
+                    msg = error["msg"].removeprefix("Value error, ")
 
-                elif loc[0] == "crew" and len(loc) >= 2:
-                    member_index = loc[1]
-                    field = ".".join(map(str, loc[2:1]))
-
-                    source = f"CrewMember rule: crew member {member_index} in {field}"
+                elif len(loc) == 1:
+                    src = f" SpaceMission field '{src}'"
 
                 else:
-                    source = f"SpaceMission rule: {'.'.join(map(str, loc))}"
-                print(f" {source}")
-                print(f" {msg}")
+                    src = f" CrewMember field   '{src}'"
 
-
-
-
-
-            # location = err.errors()[0].get('loc')
-            # if not location or len(location) == 1:
-            #     if len(location) == 1:
-            #         location = f"SpaceMission rule: {location[0]}\n"
-            #     else:
-            #         location = "SpaceMission rule:\n"
-            # else:
-            #     location = f"CrewMember rule: crew member {location[1]} in {location[2]}\n"
-            # msg = err.errors()[0].get('msg')
-            # err = str(err).split(msg, 1)[0].removeprefix("1 validation error for SpaceMission\n")
-            # msg = msg.removeprefix("Value error, ")
-            # print(
-            #     f" {location}"
-            #     f"  {msg}"
-            #     )
+                print(f"{src} -> {msg}")
 
 
 def test_json() -> None:
     try:
-        with open("/home/varaniba/CODAM_CORE/Python/Python_09/ex2/space_missions.json", "r") as file:
-            space_missions_json = json.load(file)
+        with open("space_missions.json", "r") as file:
+            missions = json.load(file)
+
     except Exception as err:
         print(f"JSON file: {err}")
+
     else:
-        unpack(space_missions_json)
+        unpack(missions)
 
 
 def test_python() -> None:
     try:
-        from space_missions import SPACE_MISSIONS as space_missions_py
+        import space_missions  # type: ignore[import-not-found, unused-ignore]
+        missions = space_missions.SPACE_MISSIONS
+
     except Exception as err:
         print(f"Python file: {err}")
+
     else:
-        unpack(space_missions_py)
+        unpack(missions)
 
 
 def main() -> None:
@@ -145,9 +146,10 @@ def main() -> None:
     print("Testing with provided JSON file:")
     test_json()
 
+    print()
     print("=" * 40)
     print("Testing with provided Python file:")
-    # test_python()
+    test_python()
 
 
 if __name__ == "__main__":

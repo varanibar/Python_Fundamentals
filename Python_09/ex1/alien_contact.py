@@ -3,7 +3,7 @@ from datetime import datetime
 from enum import Enum
 
 
-class ContactType(Enum):
+class ContactType(str, Enum):
     RADIO = "radio"
     VISUAL = "visual"
     PHYSICAL = "physical"
@@ -22,15 +22,7 @@ class AlienContact(BaseModel):
     is_verified: bool = Field(default=False)
 
     @model_validator(mode="after")
-    # After validators run after Pydantic has validated the fields.
     def bussiness_rules(self) -> "AlienContact":
-        # Double quotes are needed to be able to refer to class that
-        # is not fully defined yet.
-        # At this point, Python is still executing the definition of
-        # AlienContact, the class has not been fully created yet.
-        # The double quotes tell Python to treat AlienContact as a string
-        # annotation instead of immediately evaluating it as a class
-        # reference.
         if not self.contact_id.startswith("AC"):
             raise ValueError(
                 " Contact ID must start with 'AC' (Alien Contact)")
@@ -50,7 +42,7 @@ class AlienContact(BaseModel):
             raise ValueError(
                 " Strong signals (> 7.0) should include received messages")
 
-        return self  # The validated instance is returned
+        return self
 
 
 def main() -> None:
